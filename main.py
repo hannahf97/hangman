@@ -28,7 +28,8 @@ baseFont = pygame.font.Font('source/Jalnan.ttf', 30)
 clock = pygame.time.Clock()
 answer_list = ['apple', 'family', 'holiday', 'harvest']
 
-inputBox = InputBox
+text = ''
+box = InputBox(300, 400, 250, 100, text)
 
 class GameLogic():
     def __init__(self):  # 게임 초기화 지점
@@ -36,7 +37,7 @@ class GameLogic():
         alpha_list = list(string.ascii_lowercase)
         pass
 
-    def calculate(self, alpha, answer):
+    def calculate(self, alpha):
         for i in range(len(answer)):
             if answer[i] == alpha:
                 return i
@@ -44,7 +45,6 @@ class GameLogic():
 
     def start(self):
         screen.fill(WHITE)  # 화면 채우기
-        text = ''
         askSurf = titleFont.render("단어를 맞춰보세요 (영어로)", True, BLACK)
         askRect = askSurf.get_rect()
         askRect.center = (800 / 2, 70 )
@@ -57,20 +57,54 @@ class GameLogic():
             else:
                 screen.blit(messageSurf, (100 + 40 * (i-13 + 1), 540))
 
-        MAINIMG = pygame.image.load('source/foot.png')
+        # MAINIMG = pygame.image.load('source/foot.png')
+        # pygame.display.set_icon(MAINIMG)
+        # Img_scale = pygame.transform.scale(MAINIMG, (300, 300))
+        # img_x = 800 / 2 - 150
+        # img_y = 120
+        # screen.blit(Img_scale, (img_x, img_y))
+
+        box.draw(screen)
+        pygame.display.update()
+
+    def hangman_grow(self, alpha):
+        numbers = self.calculate(alpha.lower())
+        if numbers != -1:
+            message = "맞췄다 !"
+
+        else:
+            message = "틀렸다ㅠ"
+            if cnt == 1:
+                 MAINIMG = pygame.image.load('source/start.png')
+            elif cnt == 2:
+                MAINIMG = pygame.image.load('source/rope.png')
+            elif cnt == 3:
+                MAINIMG = pygame.image.load('source/head.png')
+            elif cnt == 4:
+                MAINIMG = pygame.image.load('source/body.png')
+            elif cnt == 5:
+                MAINIMG = pygame.image.load('source/arm.png')
+            elif cnt == 6:
+                MAINIMG = pygame.image.load('source/hand.png')
+            elif cnt == 7:
+                MAINIMG = pygame.image.load('source/leg.png')
+            elif cnt == 8:
+                MAINIMG = pygame.image.load('source/foot.png')
+                done = True
+
+        askSurf = baseFont.render(message, True, BLUE)
+        askRect = askSurf.get_rect()
+        askRect.center = (800 / 2, 100)
         pygame.display.set_icon(MAINIMG)
         Img_scale = pygame.transform.scale(MAINIMG, (300, 300))
         img_x = 800 / 2 - 150
         img_y = 120
         screen.blit(Img_scale, (img_x, img_y))
-        box = InputBox(300, 400, 250, 100, text)
-        box.draw(screen)
-        pygame.display.update()
-
 
 def runGame():
-    global done
-
+    global done, cnt
+    cnt = 0
+    input_active = True
     print("answer", answer)
     hangman = GameLogic()
     hangman.start()
@@ -78,11 +112,17 @@ def runGame():
 
     while not done:
         for event in pygame.event.get():
+            box.handle_event(event)
+            box.update()
+            box.draw(screen)
+
+            pygame.display.update()
             if event.type == pygame.QUIT:
                 done = True
                 pygame.quit()
                 sys.exit()
-        pygame.display.update()
+
+
 
 
 def showChooseAnswer():
@@ -119,15 +159,15 @@ def showChooseAnswer():
                 mousex, mousey = event.pos
                 if mainRect3.collidepoint((mousex, mousey)) :
                     answer = answer_list[2]
-                    print("다시 돌아가잇")
+
                     return
                 if mainRect2.collidepoint((mousex, mousey)) :
                     answer = answer_list[1]
-                    print("다시 돌아가잇")
+
                     return
                 if mainRect1.collidepoint((mousex, mousey)) :
                     answer = answer_list[0]
-                    print("다시 돌아가잇")
+
                     return
         pygame.display.update()
 
