@@ -16,6 +16,7 @@ class InputBox:
         self.rect = pg.Rect(x, y, w, h)
         self.color = COLOR_INACTIVE
         self.text = text
+        self.result = text
         self.txt_surface = FONT.render(text, True, self.color)
         self.active = False
 
@@ -31,9 +32,9 @@ class InputBox:
             self.color = COLOR_ACTIVE if self.active else COLOR_INACTIVE
         if event.type == pg.KEYDOWN:
             if self.active:
-
                 if event.key == pg.K_RETURN:
-                    print(self.text)
+                    self.result = self.text
+                    print(self.result)
                     self.text = ''
                 elif event.key == pg.K_BACKSPACE:
                     self.text = self.text[:-1]
@@ -42,16 +43,20 @@ class InputBox:
                     self.text += event.unicode
                     if len(self.text) > 2:
                         messagebox.showinfo("주의 !", "한글자만 입력하세요! ")
+                        self.text = self.text[:-1]
                 # Re-render the text.
                 self.txt_surface = FONT.render(self.text, True, BLACK)
 
     def update(self):
         # Resize the box if the text is too long.
-        width = max(250, 100)
+        width = max(150, 100)
         self.rect.w = width
 
     def draw(self, screen):
         # Blit the text.
-        pg.draw.rect(screen, self.color, self.rect, 2)
-        screen.blit(self.txt_surface, (self.rect.x+30, self.rect.y+30))
+        pg.draw.rect(screen, self.color, self.rect)
+        screen.blit(self.txt_surface, (self.rect.x+50, self.rect.y+10))
+
+    def getResult(self):
+        return self.result
         # Blit the rect.
