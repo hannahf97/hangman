@@ -29,7 +29,7 @@ clock = pygame.time.Clock()
 answer_list = ['apple', 'family', 'holiday', 'harvest']
 
 text = ''
-box = InputBox(300, 450, 150, 50, text)
+box = InputBox(300, 450, 150, 60, text)
 
 
 class GameLogic():
@@ -37,6 +37,7 @@ class GameLogic():
         global alpha_list, result
         self.cnt = 0
         self.answer_cnt = 0
+        self.self_answer = ''
         self.MAIN_IMG = pygame.image.load('source/blank.png')
         alpha_list = list(string.ascii_lowercase)
         result = ''
@@ -45,7 +46,9 @@ class GameLogic():
     def calculate(self, alpha):
         numberlist = []
         print(alpha,"모지", answer.count(alpha))
-        if answer.count(alpha) >= 1:
+        if self.self_answer.count(alpha) >= 1:
+            numberlist.append(-2)
+        elif answer.count(alpha) >= 1:
             print("하나이상")
             for i in range(len(answer)):
                 if answer[i] == alpha:
@@ -98,10 +101,14 @@ class GameLogic():
         else:
             screen.blit(messageSurf, (100 + 40 * (idx - 13 + 1), 540))
 
-        if numberlist[0] != -1:
+        Img_scale = pygame.transform.scale(self.MAIN_IMG, (300, 300))
+        img_x = 800 / 2 - 150
+        img_y = 170
+
+        if numberlist[0] != -1 and numberlist[0] != -2 :
             message = "맞췄다 !"
             self.answer_cnt += answer.count(text)
-
+            self.self_answer += text
             for number in numberlist:
                 answerSurf = baseFont.render(text, False, BLACK)
                 screen.blit(answerSurf, (250 + 40 * (number + 1), 140))
@@ -113,20 +120,26 @@ class GameLogic():
             pygame.display.update()  # 모든 화면 그리기 업데이트
             pygame.time.wait(300)
 
-            Img_scale = pygame.transform.scale(self.MAIN_IMG, (300, 300))
-            img_x = 800 / 2 - 150
-            img_y = 170
             screen.blit(Img_scale, (img_x, img_y))
 
             pygame.display.update()
 
-
-
             if self.answer_cnt == len(answer):
                 showYouEndScreen("Win")
                 pygame.time.delay(5000)
-                pygame.quit()  # pygame 종료
-                sys.exit()  # 시스템 종료
+
+        elif numberlist[0] == -2:
+            message = "이미 입력한 글자"
+            askSurf = baseFont.render(message, True, RED)
+            askRect = askSurf.get_rect()
+            askRect.center = (800 / 2, 300)
+            screen.blit(askSurf, askRect)
+            pygame.display.update()  # 모든 화면 그리기 업데이트
+            pygame.time.wait(300)
+
+            screen.blit(Img_scale, (img_x, img_y))
+            pygame.display.update()
+
         else:
             message = "틀렸다ㅠ"
             self.cnt += 1
@@ -163,9 +176,7 @@ class GameLogic():
 
             pygame.display.update()
 
-            Img_scale = pygame.transform.scale(self.MAIN_IMG, (300, 300))
-            img_x = 800 / 2 - 150
-            img_y = 170
+
             screen.blit(Img_scale, (img_x, img_y))
 
             pygame.display.update()  # 모든 화면 그리기 업데이트
@@ -173,8 +184,6 @@ class GameLogic():
             if self.cnt == 8:
                 showYouEndScreen("Lose")
                 pygame.time.delay(5000)
-                pygame.quit()  # pygame 종료
-                sys.exit()  # 시스템 종료
 
 
 def runGame():
