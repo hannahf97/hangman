@@ -45,11 +45,9 @@ class GameLogic():
 
     def calculate(self, alpha):
         numberlist = []
-        print(alpha,"모지", answer.count(alpha))
         if self.self_answer.count(alpha) >= 1:
             numberlist.append(-2)
         elif answer.count(alpha) >= 1:
-            print("하나이상")
             for i in range(len(answer)):
                 if answer[i] == alpha:
                     numberlist.append(i)
@@ -93,7 +91,6 @@ class GameLogic():
         numberlist = self.calculate(text)
 
         idx = alpha_list.index(text)
-        print("어떤 알파벳인지 확인", alpha_list[idx], text)
 
         messageSurf = baseFont.render(X, False, RED)
         if idx < 13:
@@ -189,7 +186,6 @@ class GameLogic():
 def runGame():
     global done
     done = False
-    print("answer", answer)
     hangman = GameLogic()
     hangman.start()
 
